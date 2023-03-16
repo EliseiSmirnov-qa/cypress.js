@@ -7,18 +7,25 @@ describe('Интернет магазин test', function () {
      
         cy.get('.summary > .cart > .product-button-wrapper > .quantity > .increase').click();
         cy.get('.summary > .cart > .product-button-wrapper > .quantity > .increase').click();
+        
+        cy.intercept('POST', '/product/**').as('ajax-product'); // Перехват запросов на добавление товара в корзину, присваивание алиаса
+        cy.intercept('/?wc-ajax=get_refreshed_fragments').as('ajax-reload'); // Перехват запросов на обновление данных о корзине, присваивание алиаса
+
         cy.get('.summary > .cart > .product-button-wrapper > .single_add_to_cart_button').click();
 
-        cy.wait(6000); // Ждем загрузки виджета корзины
+        cy.wait('@ajax-product'); // Ждём ответ с алиасом @ajax-product
+        cy.wait('@ajax-reload'); // Ждём ответ с алиасом @ajax-reload
 
         cy.get('.woocommerce-mini-cart__buttons > [href="https://sh3910517.c.had.su/cart/"]').click();
+
         cy.get('.home > span').click();
 
         cy.get('.post-11337 > .product-inner > .product-thumbnail > .woocommerce-LoopProduct-link > .attachment-woocommerce_thumbnail').click();
 
         cy.get('.summary > .cart > .product-button-wrapper > .single_add_to_cart_button').click();
 
-        cy.wait(6000); // Ждем загрузки виджета корзины
+        cy.wait('@ajax-product'); // Ждём ответ с алиасом @ajax-product
+        cy.wait('@ajax-reload'); // Ждём ответ с алиасом @ajax-reload
 
         cy.get('.checkout').click();
 
